@@ -26,7 +26,7 @@ const Footer = () => {
                 <Facebook size={18} />
               </a>
               <a
-                href="https://instagram.com/ZAMWE"
+                href="https://www.instagram.com/zamwehub?igsh=MTBqemV0N3pkeXI4OQ=="
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-primary/10 hover:bg-primary hover:text-primary-foreground transition-all"
