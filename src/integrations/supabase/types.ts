@@ -14,16 +14,176 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contact_messages: {
+        Row: {
+          email: string
+          id: string
+          is_read: boolean
+          message: string
+          name: string
+          phone: string | null
+          read_at: string | null
+          submitted_at: string
+        }
+        Insert: {
+          email: string
+          id?: string
+          is_read?: boolean
+          message: string
+          name: string
+          phone?: string | null
+          read_at?: string | null
+          submitted_at?: string
+        }
+        Update: {
+          email?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          name?: string
+          phone?: string | null
+          read_at?: string | null
+          submitted_at?: string
+        }
+        Relationships: []
+      }
+      join_applications: {
+        Row: {
+          business_name: string
+          business_type: string
+          contact_address: string
+          email: string | null
+          full_name: string
+          id: string
+          membership_plan: Database["public"]["Enums"]["membership_plan"]
+          next_of_kin: string
+          payment_evidence_url: string | null
+          phone_number: string
+          photo_url: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["application_status"]
+          submitted_at: string
+          why_join: string
+        }
+        Insert: {
+          business_name: string
+          business_type: string
+          contact_address: string
+          email?: string | null
+          full_name: string
+          id?: string
+          membership_plan: Database["public"]["Enums"]["membership_plan"]
+          next_of_kin: string
+          payment_evidence_url?: string | null
+          phone_number: string
+          photo_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          submitted_at?: string
+          why_join: string
+        }
+        Update: {
+          business_name?: string
+          business_type?: string
+          contact_address?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          membership_plan?: Database["public"]["Enums"]["membership_plan"]
+          next_of_kin?: string
+          payment_evidence_url?: string | null
+          phone_number?: string
+          photo_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          submitted_at?: string
+          why_join?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          business_name: string | null
+          business_type: string | null
+          contact_address: string | null
+          created_at: string
+          full_name: string
+          id: string
+          next_of_kin: string | null
+          phone_number: string | null
+          photo_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_name?: string | null
+          business_type?: string | null
+          contact_address?: string | null
+          created_at?: string
+          full_name: string
+          id?: string
+          next_of_kin?: string | null
+          phone_number?: string | null
+          photo_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_name?: string | null
+          business_type?: string | null
+          contact_address?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          next_of_kin?: string | null
+          phone_number?: string | null
+          photo_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      application_status: "pending" | "approved" | "rejected"
+      membership_plan: "starter" | "pro"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +310,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      application_status: ["pending", "approved", "rejected"],
+      membership_plan: ["starter", "pro"],
+    },
   },
 } as const
