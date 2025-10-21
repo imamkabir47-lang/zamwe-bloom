@@ -34,7 +34,7 @@ const Footer = () => {
                 <Instagram size={18} />
               </a>
               <a
-                href="https://tiktok.com/@ZAMWE"
+                href="https://www.tiktok.com/@zamfara.women.ent?_t=ZM-90jKrpm80ls&_r=1"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-primary/10 hover:bg-primary hover:text-primary-foreground transition-all"
