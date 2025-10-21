@@ -193,40 +193,53 @@ const AdminDashboard = () => {
           <TabsContent value="applications" className="space-y-4">
             {applications.map((app) => (
               <Card key={app.id} className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="font-semibold text-lg">{app.full_name}</h3>
-                    <p className="text-sm text-foreground/60">
-                      {app.business_name} - {app.business_type}
-                    </p>
-                  </div>
-                  <Badge
-                    variant={
-                      app.status === "pending"
-                        ? "outline"
-                        : app.status === "approved"
-                        ? "default"
-                        : "destructive"
-                    }
-                  >
-                    {app.status}
-                  </Badge>
-                </div>
-                <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-                  <div>
-                    <span className="text-foreground/60">Phone:</span>{" "}
-                    {app.phone_number}
-                  </div>
-                  <div>
-                    <span className="text-foreground/60">Email:</span> {app.email}
-                  </div>
-                  <div>
-                    <span className="text-foreground/60">Plan:</span>{" "}
-                    {app.membership_plan}
-                  </div>
-                  <div>
-                    <span className="text-foreground/60">Submitted:</span>{" "}
-                    {formatDistanceToNow(new Date(app.submitted_at))} ago
+                <div className="flex gap-6 mb-4">
+                  {app.photo_url && (
+                    <div className="flex-shrink-0">
+                      <img
+                        src={app.photo_url}
+                        alt={app.full_name}
+                        className="w-32 h-32 object-cover rounded-lg border-2 border-primary/20"
+                      />
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="font-semibold text-lg">{app.full_name}</h3>
+                        <p className="text-sm text-foreground/60">
+                          {app.business_name} - {app.business_type}
+                        </p>
+                      </div>
+                      <Badge
+                        variant={
+                          app.status === "pending"
+                            ? "outline"
+                            : app.status === "approved"
+                            ? "default"
+                            : "destructive"
+                        }
+                      >
+                        {app.status}
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-foreground/60">Phone:</span>{" "}
+                        {app.phone_number}
+                      </div>
+                      <div>
+                        <span className="text-foreground/60">Email:</span> {app.email}
+                      </div>
+                      <div>
+                        <span className="text-foreground/60">Plan:</span>{" "}
+                        {app.membership_plan}
+                      </div>
+                      <div>
+                        <span className="text-foreground/60">Submitted:</span>{" "}
+                        {formatDistanceToNow(new Date(app.submitted_at))} ago
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className="mb-4">
