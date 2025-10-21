@@ -55,7 +55,7 @@ const Navbar = () => {
             <Link to="/login">
               <Button variant="outline">Login</Button>
             </Link>
-            <Link to="/register">
+            <Link to="/join">
               <Button className="bg-gradient-to-r from-primary to-primary/80 hover:shadow-glow">
                 Join Now
               </Button>
@@ -93,7 +93,7 @@ const Navbar = () => {
                 <Link to="/login" onClick={() => setIsOpen(false)}>
                   <Button variant="outline" className="w-full">Login</Button>
                 </Link>
-                <Link to="/register" onClick={() => setIsOpen(false)}>
+                <Link to="/join" onClick={() => setIsOpen(false)}>
                   <Button className="w-full bg-gradient-to-r from-primary to-primary/80">
                     Join Now
                   </Button>
