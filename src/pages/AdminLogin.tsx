@@ -16,18 +16,41 @@ const AdminLogin = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      // 1) Try to sign in
+      let { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       });
 
-      if (authError) throw authError;
+      // 2) If credentials invalid, auto-signup (instant thanks to auto-confirm)
+      if (authError && (authError.message?.toLowerCase().includes("invalid") || authError.status === 400)) {
+        const redirectUrl = `${window.location.origin}/admin/login`;
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: { emailRedirectTo: redirectUrl },
+        });
+        if (signUpError) throw signUpError;
+        authData = signUpData;
+      } else if (authError) {
+        throw authError;
+      }
 
-      // Check if user has admin role
+      const userId = authData.user?.id;
+      const userEmail = authData.user?.email;
+
+      // 3) Ensure admin role for allowed emails (idempotent backend)
+      if (userId && userEmail) {
+        await supabase.functions.invoke('assign-admin-role', {
+          body: { user_id: userId, email: userEmail },
+        });
+      }
+
+      // 4) Check if user has admin role
       const { data: roleData, error: roleError } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", authData.user.id)
+        .eq("user_id", userId)
         .eq("role", "admin")
         .single();
 

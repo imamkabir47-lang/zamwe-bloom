@@ -26,6 +26,8 @@ const Join = () => {
     membershipPlan: "starter" as "starter" | "pro",
   });
 
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.membershipPlan) {
