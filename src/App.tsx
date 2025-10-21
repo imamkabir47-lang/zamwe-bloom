@@ -10,8 +10,13 @@ import About from "./pages/About";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
 import Events from "./pages/Events";
+import EventsNew from "./pages/EventsNew";
 import Gallery from "./pages/Gallery";
 import Members from "./pages/Members";
+import MembersDirectory from "./pages/MembersDirectory";
+import MemberProfile from "./pages/MemberProfile";
+import Resources from "./pages/Resources";
+import SuccessStories from "./pages/SuccessStories";
 import Join from "./pages/Join";
 import Login from "./pages/Login";
 import AdminLogin from "./pages/AdminLogin";
@@ -34,9 +39,13 @@ const App = () => (
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/services" element={<Services />} />
-              <Route path="/events" element={<Events />} />
+              <Route path="/events" element={<EventsNew />} />
               <Route path="/gallery" element={<Gallery />} />
-              <Route path="/members" element={<Members />} />
+              <Route path="/members-old" element={<Members />} />
+              <Route path="/members" element={<MembersDirectory />} />
+              <Route path="/members/:id" element={<MemberProfile />} />
+              <Route path="/resources" element={<Resources />} />
+              <Route path="/success-stories" element={<SuccessStories />} />
               <Route path="/join" element={<Join />} />
               <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
