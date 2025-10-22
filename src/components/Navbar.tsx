@@ -2,21 +2,25 @@ import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 import logo from "@/assets/logo-zamwe.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { t } = useTranslation();
 
   const links = [
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "Services", path: "/services" },
-    { name: "Events", path: "/events" },
-    { name: "Members", path: "/members" },
-    { name: "Resources", path: "/resources" },
-    { name: "Gallery", path: "/gallery" },
-    { name: "Contact", path: "/contact" },
+    { name: t('nav.home'), path: "/" },
+    { name: t('nav.about'), path: "/about" },
+    { name: t('nav.services'), path: "/services" },
+    { name: t('nav.events'), path: "/events" },
+    { name: t('nav.members'), path: "/members" },
+    { name: t('nav.forum'), path: "/forum" },
+    { name: t('nav.courses'), path: "/courses" },
+    { name: t('nav.marketplace'), path: "/marketplace" },
+    { name: t('nav.resources'), path: "/resources" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -25,7 +29,6 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 glass-card">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
             <img src={logo} alt="ZAMWE Logo" className="h-12 w-12 transition-transform group-hover:scale-110" />
             <div className="flex flex-col">
@@ -34,7 +37,6 @@ const Navbar = () => {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-1">
             {links.map((link) => (
               <Link
@@ -51,8 +53,8 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* CTA Buttons */}
           <div className="hidden lg:flex items-center space-x-3">
+            <LanguageSwitcher />
             <Link to="/login">
               <Button variant="outline">Login</Button>
             </Link>
@@ -63,7 +65,6 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="lg:hidden p-2 rounded-lg hover:bg-secondary"
@@ -72,7 +73,6 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {isOpen && (
           <div className="lg:hidden py-4 animate-fade-in">
             <div className="flex flex-col space-y-2">
