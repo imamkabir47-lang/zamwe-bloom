@@ -104,38 +104,38 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card
             className="p-6 hover-scale cursor-pointer animate-fade-in"
-            onClick={() => navigate("/templates")}
+            onClick={() => navigate("/profile")}
           >
-            <div className="text-3xl mb-3">📄</div>
-            <h3 className="font-semibold mb-1">My Templates</h3>
-            <p className="text-sm text-foreground/70">Manage your templates</p>
+            <div className="text-3xl mb-3">👤</div>
+            <h3 className="font-semibold mb-1">My Profile</h3>
+            <p className="text-sm text-foreground/70">Update your profile</p>
           </Card>
           <Card
             className="p-6 hover-scale cursor-pointer animate-fade-in"
-            onClick={() => navigate("/events")}
+            onClick={() => navigate("/create-post")}
             style={{ animationDelay: "0.1s" }}
           >
-            <div className="text-3xl mb-3">📅</div>
-            <h3 className="font-semibold mb-1">Events</h3>
-            <p className="text-sm text-foreground/70">View upcoming events</p>
+            <div className="text-3xl mb-3">📝</div>
+            <h3 className="font-semibold mb-1">Create Post</h3>
+            <p className="text-sm text-foreground/70">Share products or photos</p>
           </Card>
           <Card
             className="p-6 hover-scale cursor-pointer animate-fade-in"
-            onClick={() => navigate("/contact")}
+            onClick={() => navigate("/marketplace")}
             style={{ animationDelay: "0.2s" }}
+          >
+            <div className="text-3xl mb-3">🛒</div>
+            <h3 className="font-semibold mb-1">Marketplace</h3>
+            <p className="text-sm text-foreground/70">Browse the marketplace</p>
+          </Card>
+          <Card
+            className="p-6 hover-scale cursor-pointer animate-fade-in"
+            onClick={() => navigate("/messages")}
+            style={{ animationDelay: "0.3s" }}
           >
             <div className="text-3xl mb-3">💬</div>
             <h3 className="font-semibold mb-1">Messages</h3>
-            <p className="text-sm text-foreground/70">Contact support</p>
-          </Card>
-          <Card
-            className="p-6 hover-scale cursor-pointer animate-fade-in"
-            onClick={() => navigate("/builder")}
-            style={{ animationDelay: "0.3s" }}
-          >
-            <div className="text-3xl mb-3">🏗️</div>
-            <h3 className="font-semibold mb-1">Builder</h3>
-            <p className="text-sm text-foreground/70">Create new template</p>
+            <p className="text-sm text-foreground/70">Check your messages</p>
           </Card>
         </div>
 

@@ -652,6 +652,78 @@ export type Database = {
           },
         ]
       }
+      marketplace_posts: {
+        Row: {
+          account_details: string | null
+          availability: string | null
+          caption: string | null
+          comments_count: number | null
+          created_at: string | null
+          currency: string | null
+          id: string
+          is_active: boolean | null
+          is_boosted: boolean | null
+          likes_count: number | null
+          location: string | null
+          media_type: string
+          media_urls: Json | null
+          payment_method: string | null
+          price: number | null
+          product_name: string | null
+          quantity: number | null
+          updated_at: string | null
+          user_id: string
+          views_count: number | null
+          whatsapp_number: string | null
+        }
+        Insert: {
+          account_details?: string | null
+          availability?: string | null
+          caption?: string | null
+          comments_count?: number | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_boosted?: boolean | null
+          likes_count?: number | null
+          location?: string | null
+          media_type: string
+          media_urls?: Json | null
+          payment_method?: string | null
+          price?: number | null
+          product_name?: string | null
+          quantity?: number | null
+          updated_at?: string | null
+          user_id: string
+          views_count?: number | null
+          whatsapp_number?: string | null
+        }
+        Update: {
+          account_details?: string | null
+          availability?: string | null
+          caption?: string | null
+          comments_count?: number | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_boosted?: boolean | null
+          likes_count?: number | null
+          location?: string | null
+          media_type?: string
+          media_urls?: Json | null
+          payment_method?: string | null
+          price?: number | null
+          product_name?: string | null
+          quantity?: number | null
+          updated_at?: string | null
+          user_id?: string
+          views_count?: number | null
+          whatsapp_number?: string | null
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string
@@ -926,6 +998,102 @@ export type Database = {
           },
         ]
       }
+      post_comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          post_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          post_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          post_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_likes: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_views: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string
+          viewer_id: string | null
+          viewer_ip: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id: string
+          viewer_id?: string | null
+          viewer_ip?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string
+          viewer_id?: string | null
+          viewer_ip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_views_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string
@@ -984,43 +1152,73 @@ export type Database = {
       }
       profiles: {
         Row: {
+          bio: string | null
           business_name: string | null
           business_type: string | null
           contact_address: string | null
           created_at: string
+          created_by_admin: string | null
+          expires_at: string | null
           full_name: string
           id: string
+          is_active: boolean | null
+          is_verified: boolean | null
           next_of_kin: string | null
+          payment_reference: string | null
+          payment_status: string | null
           phone_number: string | null
           photo_url: string | null
           updated_at: string
           user_id: string
+          user_type: string | null
+          username: string | null
+          whatsapp_number: string | null
         }
         Insert: {
+          bio?: string | null
           business_name?: string | null
           business_type?: string | null
           contact_address?: string | null
           created_at?: string
+          created_by_admin?: string | null
+          expires_at?: string | null
           full_name: string
           id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
           next_of_kin?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
           phone_number?: string | null
           photo_url?: string | null
           updated_at?: string
           user_id: string
+          user_type?: string | null
+          username?: string | null
+          whatsapp_number?: string | null
         }
         Update: {
+          bio?: string | null
           business_name?: string | null
           business_type?: string | null
           contact_address?: string | null
           created_at?: string
+          created_by_admin?: string | null
+          expires_at?: string | null
           full_name?: string
           id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
           next_of_kin?: string | null
+          payment_reference?: string | null
+          payment_status?: string | null
           phone_number?: string | null
           photo_url?: string | null
           updated_at?: string
           user_id?: string
+          user_type?: string | null
+          username?: string | null
+          whatsapp_number?: string | null
         }
         Relationships: []
       }
@@ -1177,6 +1375,33 @@ export type Database = {
           },
         ]
       }
+      site_analytics: {
+        Row: {
+          created_at: string | null
+          id: string
+          page_path: string
+          user_id: string | null
+          visitor_id: string | null
+          visitor_ip: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          page_path: string
+          user_id?: string | null
+          visitor_id?: string | null
+          visitor_ip?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          page_path?: string
+          user_id?: string | null
+          visitor_id?: string | null
+          visitor_ip?: string | null
+        }
+        Relationships: []
+      }
       testimonials: {
         Row: {
           business_name: string
@@ -1269,6 +1494,27 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      user_follows: {
+        Row: {
+          created_at: string | null
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
       }
       user_points: {
         Row: {
@@ -1378,6 +1624,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      deactivate_expired_users: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

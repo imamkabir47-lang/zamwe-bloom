@@ -23,6 +23,9 @@ import Login from "./pages/Login";
 import AdminLogin from "./pages/AdminLogin";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminCreateUser from "./pages/AdminCreateUser";
+import UserProfile from "./pages/UserProfile";
+import CreatePost from "./pages/CreatePost";
 import Videos from "./pages/Videos";
 import Messages from "./pages/Messages";
 import Forum from "./pages/Forum";
@@ -58,11 +61,14 @@ const App = () => (
                   <Route path="/forum" element={<Forum />} />
                   <Route path="/courses" element={<Courses />} />
                   <Route path="/marketplace" element={<Marketplace />} />
+                  <Route path="/create-post" element={<CreatePost />} />
+                  <Route path="/profile" element={<UserProfile />} />
                   <Route path="/join" element={<Join />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/admin/login" element={<AdminLogin />} />
                   <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin/create-user" element={<AdminCreateUser />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

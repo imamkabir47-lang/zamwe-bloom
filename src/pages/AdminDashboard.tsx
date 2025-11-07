@@ -151,9 +151,17 @@ const AdminDashboard = () => {
           <h1 className="text-4xl font-serif font-bold text-primary">
             Admin Dashboard
           </h1>
-          <Button onClick={handleLogout} variant="outline">
-            Logout
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => navigate('/admin/create-user')}>
+              Create User
+            </Button>
+            <Button onClick={() => navigate('/create-post')} variant="secondary">
+              Post to Marketplace
+            </Button>
+            <Button onClick={handleLogout} variant="outline">
+              Logout
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
