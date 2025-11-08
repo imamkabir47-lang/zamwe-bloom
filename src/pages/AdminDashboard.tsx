@@ -24,7 +24,7 @@ const AdminDashboard = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        navigate("/admin/login");
+        navigate("/admin");
         return;
       }
 
@@ -44,7 +44,7 @@ const AdminDashboard = () => {
         navigate("/");
       }
     } catch (error) {
-      navigate("/admin/login");
+      navigate("/admin");
     }
   };
 
@@ -154,6 +154,12 @@ const AdminDashboard = () => {
           <div className="flex gap-2">
             <Button onClick={() => navigate('/admin/create-user')}>
               Create User
+            </Button>
+            <Button onClick={() => navigate('/admin/create-admin')} variant="secondary">
+              Create Admin
+            </Button>
+            <Button onClick={() => navigate('/admin/manage-events')} variant="secondary">
+              Manage Events
             </Button>
             <Button onClick={() => navigate('/create-post')} variant="secondary">
               Post to Marketplace

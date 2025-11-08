@@ -63,7 +63,7 @@ const AdminLogin = () => {
         title: "Admin access granted",
         description: "Welcome to the admin dashboard",
       });
-      navigate("/admin");
+      navigate("/admin/dashboard");
     } catch (error: any) {
       toast({
         title: "Login failed",

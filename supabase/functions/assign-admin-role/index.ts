@@ -11,6 +11,7 @@ const allowedAdmins = new Set([
   "opeyemizahraa29@gmail.com",
   "faridamusag@gmail.com",
   "faizaaminu760@gmail.com",
+  "imamkabir397@gmail.com",
 ]);
 
 serve(async (req: Request) => {

@@ -86,7 +86,7 @@ const AdminCreateUser = () => {
       <div className="container mx-auto px-4">
         <Button
           variant="ghost"
-          onClick={() => navigate('/admin')}
+          onClick={() => navigate('/admin/dashboard')}
           className="mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />

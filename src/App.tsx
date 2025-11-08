@@ -24,6 +24,8 @@ import AdminLogin from "./pages/AdminLogin";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminCreateUser from "./pages/AdminCreateUser";
+import AdminCreateAdmin from "./pages/AdminCreateAdmin";
+import AdminManageEvents from "./pages/AdminManageEvents";
 import UserProfile from "./pages/UserProfile";
 import CreatePost from "./pages/CreatePost";
 import Videos from "./pages/Videos";
@@ -66,9 +68,11 @@ const App = () => (
                   <Route path="/join" element={<Join />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/admin/login" element={<AdminLogin />} />
-                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin" element={<AdminLogin />} />
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
                   <Route path="/admin/create-user" element={<AdminCreateUser />} />
+                  <Route path="/admin/create-admin" element={<AdminCreateAdmin />} />
+                  <Route path="/admin/manage-events" element={<AdminManageEvents />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
