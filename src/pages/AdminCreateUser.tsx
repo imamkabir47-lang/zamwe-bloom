@@ -28,49 +28,41 @@ const AdminCreateUser = () => {
     setLoading(true);
 
     try {
-      // Generate email based on username
-      const email = `${formData.username}@zamwe.shop`;
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('Not authenticated');
+      }
 
-      // Create auth user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password: formData.password,
-        options: {
-          data: {
-            full_name: `${formData.firstName} ${formData.lastName}`
-          }
+      // Call edge function to create user
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-user`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            username: formData.username,
+            password: formData.password,
+            userType: formData.userType,
+            durationDays: formData.durationDays,
+            paymentStatus: formData.paymentStatus,
+            paymentReference: formData.paymentReference
+          }),
         }
-      });
+      );
 
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('User creation failed');
+      const result = await response.json();
 
-      // Calculate expiry date for temporary users
-      const expiresAt = formData.userType === 'temporary'
-        ? new Date(Date.now() + parseInt(formData.durationDays) * 24 * 60 * 60 * 1000).toISOString()
-        : null;
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create user');
+      }
 
-      // Get current admin user
-      const { data: { user: adminUser } } = await supabase.auth.getUser();
-
-      // Create profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          user_id: authData.user.id,
-          full_name: `${formData.firstName} ${formData.lastName}`,
-          username: formData.username,
-          user_type: formData.userType,
-          expires_at: expiresAt,
-          is_active: true,
-          payment_status: formData.paymentStatus,
-          payment_reference: formData.paymentReference,
-          created_by_admin: adminUser?.id
-        });
-
-      if (profileError) throw profileError;
-
-      toast.success(`User ${formData.username} created successfully!`);
+      toast.success(result.message || `User ${formData.username} created successfully!`);
       setFormData({
         firstName: '',
         lastName: '',
