@@ -42,6 +42,26 @@ const Marketplace = () => {
   useEffect(() => {
     checkUser();
     loadPosts();
+
+    // Setup realtime subscription for instant updates
+    const channel = supabase
+      .channel('marketplace-posts-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'marketplace_posts'
+        },
+        () => {
+          loadPosts();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const checkUser = async () => {

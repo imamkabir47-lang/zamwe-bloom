@@ -59,7 +59,7 @@ const HeroSection = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/register">
+              <Link to="/join">
                 <Button size="lg" className="bg-gradient-to-r from-primary to-primary/80 hover:shadow-glow text-lg px-8">
                   Join ZAMWE Today
                 </Button>
