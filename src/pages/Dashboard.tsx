@@ -46,20 +46,11 @@ const Dashboard = () => {
 
       setProfile(profileData);
 
-      // Load my posts
+      // Load ALL my posts (including inactive)
       const { data: postsData } = await supabase
         .from("marketplace_posts")
-        .select(`
-          *,
-          profiles!marketplace_posts_user_id_fkey (
-            full_name,
-            photo_url,
-            username,
-            is_verified
-          )
-        `)
+        .select('*')
         .eq("user_id", user.id)
-        .eq("is_active", true)
         .order("created_at", { ascending: false });
 
       setMyPosts(postsData || []);
@@ -140,17 +131,8 @@ const Dashboard = () => {
 
     const { data: postsData } = await supabase
       .from("marketplace_posts")
-      .select(`
-        *,
-        profiles!marketplace_posts_user_id_fkey (
-          full_name,
-          photo_url,
-          username,
-          is_verified
-        )
-      `)
+      .select('*')
       .eq("user_id", user.id)
-      .eq("is_active", true)
       .order("created_at", { ascending: false });
 
     setMyPosts(postsData || []);
@@ -271,39 +253,103 @@ const Dashboard = () => {
             </div>
 
             {/* My Posts Section */}
-            {myPosts.length > 0 && (
-              <Card className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-semibold">My Posts</h2>
-                  <Badge variant="secondary">{myPosts.length}</Badge>
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-semibold">My Posts</h2>
+                <Badge variant="secondary">{myPosts.length}</Badge>
+              </div>
+              {myPosts.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground mb-4">You haven't created any posts yet</p>
+                  <Button onClick={() => navigate('/create-post')}>
+                    Create Your First Post
+                  </Button>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {myPosts.slice(0, 6).map((post) => (
-                    <div
-                      key={post.id}
-                      className="aspect-square relative overflow-hidden rounded-lg cursor-pointer hover:opacity-90 transition"
-                      onClick={() => navigate('/marketplace')}
-                    >
-                      <img
-                        src={post.media_urls?.[0] || 'https://via.placeholder.com/300'}
-                        alt={post.product_name || 'Post'}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition flex items-center justify-center gap-4 text-white text-sm">
-                        <div className="flex items-center gap-1">
-                          <Heart className="h-4 w-4" />
-                          {post.likes_count}
+              ) : (
+                <div className="space-y-4">
+                  {myPosts.map((post) => (
+                    <Card key={post.id} className="p-4">
+                      <div className="flex gap-4">
+                        <div 
+                          className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
+                          onClick={() => navigate(`/post/${post.id}`)}
+                        >
+                          <img
+                            src={post.media_urls?.[0] || 'https://via.placeholder.com/300'}
+                            alt={post.product_name || 'Post'}
+                            className="w-full h-full object-cover hover:scale-110 transition"
+                          />
                         </div>
-                        <div className="flex items-center gap-1">
-                          <MessageCircle className="h-4 w-4" />
-                          {post.comments_count}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-semibold text-lg truncate">{post.product_name || 'Post'}</h3>
+                              {post.caption && (
+                                <p className="text-sm text-muted-foreground line-clamp-2">{post.caption}</p>
+                              )}
+                            </div>
+                            <Badge variant={post.is_active ? "default" : "secondary"}>
+                              {post.is_active ? 'Active' : 'Inactive'}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                            <div className="flex items-center gap-1">
+                              <Heart className="h-4 w-4" />
+                              {post.likes_count || 0}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <MessageCircle className="h-4 w-4" />
+                              {post.comments_count || 0}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Eye className="h-4 w-4" />
+                              {post.views_count || 0}
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => navigate(`/post/${post.id}`)}
+                            >
+                              <Eye className="h-4 w-4 mr-1" />
+                              View
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => navigate(`/edit-post/${post.id}`)}
+                            >
+                              Edit
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="destructive"
+                              onClick={async () => {
+                                if (!confirm('Delete this post? This cannot be undone.')) return;
+                                try {
+                                  const { error } = await supabase
+                                    .from('marketplace_posts')
+                                    .delete()
+                                    .eq('id', post.id);
+                                  if (error) throw error;
+                                  toast({ title: 'Post deleted successfully' });
+                                  loadPosts();
+                                } catch (err) {
+                                  toast({ title: 'Failed to delete post', variant: 'destructive' });
+                                }
+                              }}
+                            >
+                              Delete
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </Card>
                   ))}
                 </div>
-              </Card>
-            )}
+              )}
+            </Card>
 
             {/* Latest Posts Feed */}
             <Card className="p-6">

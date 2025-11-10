@@ -31,6 +31,7 @@ import AdminManageVideos from "./pages/AdminManageVideos";
 import AdminManageUsers from "./pages/AdminManageUsers";
 import UserProfile from "./pages/UserProfile";
 import CreatePost from "./pages/CreatePost";
+import EditPost from "./pages/EditPost";
 import Videos from "./pages/Videos";
 import Messages from "./pages/Messages";
 import Forum from "./pages/Forum";
@@ -69,6 +70,7 @@ const App = () => (
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/post/:id" element={<ProductDetail />} />
                   <Route path="/create-post" element={<CreatePost />} />
+                  <Route path="/edit-post/:id" element={<EditPost />} />
                   <Route path="/profile" element={<UserProfile />} />
                   <Route path="/join" element={<Join />} />
                   <Route path="/login" element={<Login />} />
