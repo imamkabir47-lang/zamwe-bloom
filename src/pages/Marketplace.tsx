@@ -80,31 +80,48 @@ const Marketplace = () => {
 
   const loadPosts = async (currentUser?: any) => {
     try {
-      let query = supabase
+      const selectCols = '*';
+
+      // 1) Fetch all active posts for everyone
+      const { data: activePosts, error: activeError } = await supabase
         .from('marketplace_posts')
-        .select(`
-          *,
-          profiles(full_name, username, business_name, photo_url, is_verified)
-        `)
+        .select(selectCols)
+        .eq('is_active', true)
         .order('is_boosted', { ascending: false })
         .order('created_at', { ascending: false });
 
+      if (activeError) throw activeError;
+
+      let combined = activePosts || [];
+
+      // 2) If logged in, also include ALL of my posts (even if inactive/drafts)
       const uid = currentUser?.id || user?.id;
       if (uid) {
-        // Show active posts for everyone + include my own drafts/inactive
-        query = query.or(`is_active.eq.true,user_id.eq.${uid}`);
-      } else {
-        query = query.eq('is_active', true);
+        const { data: myPosts, error: myError } = await supabase
+          .from('marketplace_posts')
+          .select(selectCols)
+          .eq('user_id', uid)
+          .order('created_at', { ascending: false });
+
+        if (myError) throw myError;
+
+        const map = new Map<string, any>();
+        [...(myPosts || []), ...combined].forEach((p: any) => map.set(p.id, p));
+        combined = Array.from(map.values());
+
+        // Boosted first, newest next
+        combined.sort((a: any, b: any) => {
+          const boostDiff = (b.is_boosted ? 1 : 0) - (a.is_boosted ? 1 : 0);
+          if (boostDiff !== 0) return boostDiff;
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
       }
 
-      const { data, error } = await query;
-
-      if (error) throw error;
-      setPosts(data as any || []);
+      setPosts(combined as any);
 
       // Find product of the day (most reviewed product)
-      if (data && data.length > 0) {
-        const topProduct = [...data].sort((a, b) => 
+      if (combined && combined.length > 0) {
+        const topProduct = [...combined].sort((a: any, b: any) =>
           (b.reviews_count || 0) - (a.reviews_count || 0)
         )[0];
         setProductOfDay(topProduct as any);

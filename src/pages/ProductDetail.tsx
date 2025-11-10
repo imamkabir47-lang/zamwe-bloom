@@ -75,10 +75,7 @@ const ProductDetail = () => {
     try {
       const { data, error } = await supabase
         .from('marketplace_posts')
-        .select(`
-          *,
-          profiles(full_name, username, business_name, photo_url, is_verified)
-        `)
+        .select('*')
         .eq('id', id)
         .single();
 
