@@ -141,17 +141,19 @@ const MembersDirectory = () => {
                   </div>
                 )}
 
-                <div className="flex items-center gap-2 text-foreground/70">
-                  <Phone className="w-4 h-4 flex-shrink-0" />
-                  <a
-                    href={`https://wa.me/${member.phone_number.replace(/\D/g, "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-primary transition-colors"
-                  >
-                    {member.phone_number}
-                  </a>
-                </div>
+                {member.phone_number && (
+                  <div className="flex items-center gap-2 text-foreground/70">
+                    <Phone className="w-4 h-4 flex-shrink-0" />
+                    <a
+                      href={`https://wa.me/${member.phone_number.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-primary transition-colors"
+                    >
+                      {member.phone_number}
+                    </a>
+                  </div>
+                )}
 
                 {member.contact_address && (
                   <div className="flex items-start gap-2 text-foreground/70">
