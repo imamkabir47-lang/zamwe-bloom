@@ -26,6 +26,9 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminCreateUser from "./pages/AdminCreateUser";
 import AdminCreateAdmin from "./pages/AdminCreateAdmin";
 import AdminManageEvents from "./pages/AdminManageEvents";
+import AdminManageResources from "./pages/AdminManageResources";
+import AdminManageVideos from "./pages/AdminManageVideos";
+import AdminManageUsers from "./pages/AdminManageUsers";
 import UserProfile from "./pages/UserProfile";
 import CreatePost from "./pages/CreatePost";
 import Videos from "./pages/Videos";
@@ -70,9 +73,12 @@ const App = () => (
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/admin" element={<AdminLogin />} />
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                  <Route path="/admin/create-user" element={<AdminCreateUser />} />
-                  <Route path="/admin/create-admin" element={<AdminCreateAdmin />} />
-                  <Route path="/admin/manage-events" element={<AdminManageEvents />} />
+          <Route path="/admin/create-user" element={<AdminCreateUser />} />
+          <Route path="/admin/create-admin" element={<AdminCreateAdmin />} />
+          <Route path="/admin/manage-events" element={<AdminManageEvents />} />
+          <Route path="/admin/manage-resources" element={<AdminManageResources />} />
+          <Route path="/admin/manage-videos" element={<AdminManageVideos />} />
+          <Route path="/admin/manage-users" element={<AdminManageUsers />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

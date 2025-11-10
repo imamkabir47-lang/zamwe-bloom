@@ -55,6 +55,9 @@ const Navbar = () => {
 
           <div className="hidden lg:flex items-center space-x-3">
             <LanguageSwitcher />
+            <Link to="/admin">
+              <Button variant="ghost" size="sm">Admin</Button>
+            </Link>
             <Link to="/login">
               <Button variant="outline">Login</Button>
             </Link>
@@ -91,6 +94,9 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="pt-4 space-y-2">
+                <Link to="/admin" onClick={() => setIsOpen(false)}>
+                  <Button variant="ghost" className="w-full">Admin</Button>
+                </Link>
                 <Link to="/login" onClick={() => setIsOpen(false)}>
                   <Button variant="outline" className="w-full">Login</Button>
                 </Link>

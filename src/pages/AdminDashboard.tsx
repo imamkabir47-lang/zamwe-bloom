@@ -151,8 +151,11 @@ const AdminDashboard = () => {
           <h1 className="text-4xl font-serif font-bold text-primary">
             Admin Dashboard
           </h1>
-          <div className="flex gap-2">
-            <Button onClick={() => navigate('/admin/create-user')}>
+          <div className="flex gap-2 flex-wrap">
+            <Button onClick={() => navigate('/admin/manage-users')}>
+              Manage Users
+            </Button>
+            <Button onClick={() => navigate('/admin/create-user')} variant="secondary">
               Create User
             </Button>
             <Button onClick={() => navigate('/admin/create-admin')} variant="secondary">
@@ -161,8 +164,11 @@ const AdminDashboard = () => {
             <Button onClick={() => navigate('/admin/manage-events')} variant="secondary">
               Manage Events
             </Button>
-            <Button onClick={() => navigate('/create-post')} variant="secondary">
-              Post to Marketplace
+            <Button onClick={() => navigate('/admin/manage-resources')} variant="secondary">
+              Manage Resources
+            </Button>
+            <Button onClick={() => navigate('/admin/manage-videos')} variant="secondary">
+              Manage Videos
             </Button>
             <Button onClick={handleLogout} variant="outline">
               Logout
