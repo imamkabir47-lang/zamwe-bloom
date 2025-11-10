@@ -17,6 +17,12 @@ const Dashboard = () => {
   const [followers, setFollowers] = useState<any[]>([]);
   const [following, setFollowing] = useState<any[]>([]);
   const [allPosts, setAllPosts] = useState<any[]>([]);
+  const [stats, setStats] = useState({
+    totalPosts: 0,
+    totalLikes: 0,
+    totalViews: 0,
+    totalFollowers: 0
+  });
 
   useEffect(() => {
     checkUser();
@@ -91,6 +97,16 @@ const Dashboard = () => {
         .eq("follower_id", user.id);
 
       setFollowing(followingData || []);
+
+      // Calculate stats
+      const totalLikes = postsData?.reduce((sum, post) => sum + (post.likes_count || 0), 0) || 0;
+      const totalViews = postsData?.reduce((sum, post) => sum + (post.views_count || 0), 0) || 0;
+      setStats({
+        totalPosts: postsData?.length || 0,
+        totalLikes,
+        totalViews,
+        totalFollowers: followersData?.length || 0
+      });
 
       // Setup realtime for posts
       const channel = supabase
@@ -234,6 +250,26 @@ const Dashboard = () => {
 
           {/* Main Feed */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Analytics Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card className="p-4">
+                <div className="text-2xl font-bold text-primary">{stats.totalPosts}</div>
+                <div className="text-xs text-muted-foreground">Total Posts</div>
+              </Card>
+              <Card className="p-4">
+                <div className="text-2xl font-bold text-accent">{stats.totalLikes}</div>
+                <div className="text-xs text-muted-foreground">Total Likes</div>
+              </Card>
+              <Card className="p-4">
+                <div className="text-2xl font-bold text-primary">{stats.totalViews}</div>
+                <div className="text-xs text-muted-foreground">Total Views</div>
+              </Card>
+              <Card className="p-4">
+                <div className="text-2xl font-bold text-accent">{stats.totalFollowers}</div>
+                <div className="text-xs text-muted-foreground">Followers</div>
+              </Card>
+            </div>
+
             {/* My Posts Section */}
             {myPosts.length > 0 && (
               <Card className="p-6">

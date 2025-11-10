@@ -23,6 +23,9 @@ interface MarketplacePost {
   comments_count: number;
   is_boosted: boolean;
   created_at: string;
+  category: string;
+  average_rating: number;
+  reviews_count: number;
   profiles?: { 
     full_name: string; 
     username: string;
@@ -36,8 +39,14 @@ const Marketplace = () => {
   const [posts, setPosts] = useState<MarketplacePost[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [productOfDay, setProductOfDay] = useState<MarketplacePost | null>(null);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
+
+  const categories = [
+    'all', 'fashion', 'beauty', 'food', 'crafts', 'services', 'technology', 'other'
+  ];
 
   useEffect(() => {
     checkUser();
@@ -83,6 +92,14 @@ const Marketplace = () => {
 
       if (error) throw error;
       setPosts(data as any || []);
+
+      // Find product of the day (most reviewed product)
+      if (data && data.length > 0) {
+        const topProduct = [...data].sort((a, b) => 
+          (b.reviews_count || 0) - (a.reviews_count || 0)
+        )[0];
+        setProductOfDay(topProduct as any);
+      }
     } catch (error) {
       console.error('Error loading posts:', error);
     } finally {
@@ -113,11 +130,15 @@ const Marketplace = () => {
     }
   };
 
-  const filteredPosts = posts.filter(post =>
-    post.caption?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.product_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.location?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch = post.caption?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.product_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.location?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
+    
+    return matchesSearch && matchesCategory;
+  });
 
   if (loading) {
     return (
@@ -153,7 +174,52 @@ const Marketplace = () => {
           )}
         </div>
 
-        <div className="max-w-xl mx-auto mb-8">
+        {/* Product of the Day */}
+        {productOfDay && productOfDay.reviews_count > 0 && (
+          <Card className="mb-8 bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                🏆 Product of the Day
+                <Badge variant="default">Most Reviewed</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="aspect-square rounded-lg overflow-hidden">
+                  <img
+                    src={productOfDay.media_urls?.[0] || 'https://via.placeholder.com/400'}
+                    alt={productOfDay.product_name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <h3 className="text-2xl font-bold">{productOfDay.product_name}</h3>
+                  <div className="flex items-center gap-2">
+                    <div className="flex">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span key={star} className={star <= (productOfDay.average_rating || 0) ? 'text-yellow-500' : 'text-gray-300'}>
+                          ⭐
+                        </span>
+                      ))}
+                    </div>
+                    <span className="text-sm text-muted-foreground">
+                      {productOfDay.average_rating?.toFixed(1)} ({productOfDay.reviews_count} reviews)
+                    </span>
+                  </div>
+                  <p className="text-lg font-bold text-primary">
+                    {productOfDay.currency} {productOfDay.price?.toLocaleString()}
+                  </p>
+                  <p className="text-muted-foreground">{productOfDay.caption}</p>
+                  <Button onClick={() => navigate(`/post/${productOfDay.id}`)}>
+                    View Details
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="max-w-xl mx-auto mb-8 space-y-4">
           <div className="relative">
             <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
             <Input
@@ -162,6 +228,21 @@ const Marketplace = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
             />
+          </div>
+          
+          {/* Category Filter */}
+          <div className="flex gap-2 flex-wrap justify-center">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedCategory(category)}
+                className="capitalize"
+              >
+                {category}
+              </Button>
+            ))}
           </div>
         </div>
 
@@ -229,10 +310,30 @@ const Marketplace = () => {
                   {post.product_name && (
                     <CardTitle className="text-lg">{post.product_name}</CardTitle>
                   )}
+
+                  {/* Star Rating */}
+                  {post.reviews_count > 0 && (
+                    <div className="flex items-center gap-2">
+                      <div className="flex">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span key={star} className={`text-sm ${star <= (post.average_rating || 0) ? 'text-yellow-500' : 'text-gray-300'}`}>
+                            ⭐
+                          </span>
+                        ))}
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        ({post.reviews_count})
+                      </span>
+                    </div>
+                  )}
                   
                   {post.caption && (
                     <p className="text-sm text-muted-foreground line-clamp-2">{post.caption}</p>
                   )}
+
+                  <Badge variant="outline" className="w-fit capitalize">
+                    {post.category || 'other'}
+                  </Badge>
 
                   {post.price && (
                     <p className="text-xl font-bold text-primary">

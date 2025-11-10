@@ -26,8 +26,13 @@ const CreatePost = () => {
     availability: '',
     payment_method: '',
     account_details: '',
-    whatsapp_number: ''
+    whatsapp_number: '',
+    category: 'other'
   });
+
+  const categories = [
+    'fashion', 'beauty', 'food', 'crafts', 'services', 'technology', 'other'
+  ];
 
   const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -176,6 +181,25 @@ const CreatePost = () => {
                   rows={3}
                   placeholder="Write a caption for your post..."
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category">Category</Label>
+                <Select
+                  value={formData.category}
+                  onValueChange={(value) => setFormData({ ...formData, category: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat} value={cat} className="capitalize">
+                        {cat}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {formData.media_type === 'product' && (

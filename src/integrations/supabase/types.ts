@@ -656,7 +656,9 @@ export type Database = {
         Row: {
           account_details: string | null
           availability: string | null
+          average_rating: number | null
           caption: string | null
+          category: string | null
           comments_count: number | null
           created_at: string | null
           currency: string | null
@@ -671,6 +673,7 @@ export type Database = {
           price: number | null
           product_name: string | null
           quantity: number | null
+          reviews_count: number | null
           updated_at: string | null
           user_id: string
           views_count: number | null
@@ -679,7 +682,9 @@ export type Database = {
         Insert: {
           account_details?: string | null
           availability?: string | null
+          average_rating?: number | null
           caption?: string | null
+          category?: string | null
           comments_count?: number | null
           created_at?: string | null
           currency?: string | null
@@ -694,6 +699,7 @@ export type Database = {
           price?: number | null
           product_name?: string | null
           quantity?: number | null
+          reviews_count?: number | null
           updated_at?: string | null
           user_id: string
           views_count?: number | null
@@ -702,7 +708,9 @@ export type Database = {
         Update: {
           account_details?: string | null
           availability?: string | null
+          average_rating?: number | null
           caption?: string | null
+          category?: string | null
           comments_count?: number | null
           created_at?: string | null
           currency?: string | null
@@ -717,6 +725,7 @@ export type Database = {
           price?: number | null
           product_name?: string | null
           quantity?: number | null
+          reviews_count?: number | null
           updated_at?: string | null
           user_id?: string
           views_count?: number | null
@@ -1087,6 +1096,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "post_views_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          post_id: string
+          rating: number
+          reviewer_name: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          post_id: string
+          rating: number
+          reviewer_name?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          post_id?: string
+          rating?: number
+          reviewer_name?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_reviews_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "marketplace_posts"
