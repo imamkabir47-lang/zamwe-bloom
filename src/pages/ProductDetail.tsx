@@ -16,6 +16,8 @@ const ProductDetail = () => {
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [isOwner, setIsOwner] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [newReview, setNewReview] = useState({
     rating: 5,
     comment: '',
@@ -53,6 +55,20 @@ const ProductDetail = () => {
   const checkUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
+    if (user) {
+      // Check admin
+      try {
+        const { data: role } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .eq('role', 'admin')
+          .single();
+        setIsAdmin(!!role);
+      } catch (_) {
+        setIsAdmin(false);
+      }
+    }
   };
 
   const loadPost = async () => {
@@ -68,8 +84,9 @@ const ProductDetail = () => {
 
       if (error) throw error;
       setPost(data);
+      setIsOwner(!!user && data.user_id === user.id);
 
-      // Increment view count
+      // Increment view count (best-effort)
       await supabase
         .from('marketplace_posts')
         .update({ views_count: (data.views_count || 0) + 1 })
@@ -304,15 +321,38 @@ const ProductDetail = () => {
             </Card>
 
             {/* Action Buttons */}
-            <div className="flex gap-4">
-              <Button onClick={handleLike} className="flex-1">
+            <div className="flex gap-4 flex-wrap">
+              <Button onClick={handleLike} className="flex-1 min-w-[140px]">
                 <Heart className="h-4 w-4 mr-2" />
                 Like ({post.likes_count})
               </Button>
-              <Button variant="outline" className="flex items-center gap-1">
+              <Button variant="outline" className="flex items-center gap-1 min-w-[120px]">
                 <Eye className="h-4 w-4" />
                 {post.views_count}
               </Button>
+              {(isOwner || isAdmin) && (
+                <Button
+                  variant="destructive"
+                  className="min-w-[140px]"
+                  onClick={async () => {
+                    if (!confirm('Delete this product? This action cannot be undone.')) return;
+                    try {
+                      const { error } = await supabase
+                        .from('marketplace_posts')
+                        .delete()
+                        .eq('id', id);
+                      if (error) throw error;
+                      toast.success('Product deleted');
+                      navigate('/marketplace');
+                    } catch (err) {
+                      console.error(err);
+                      toast.error('Failed to delete');
+                    }
+                  }}
+                >
+                  Delete
+                </Button>
+              )}
             </div>
           </div>
         </div>

@@ -50,7 +50,6 @@ const Marketplace = () => {
 
   useEffect(() => {
     checkUser();
-    loadPosts();
 
     // Setup realtime subscription for instant updates
     const channel = supabase
@@ -76,19 +75,29 @@ const Marketplace = () => {
   const checkUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
+    await loadPosts(user);
   };
 
-  const loadPosts = async () => {
+  const loadPosts = async (currentUser?: any) => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('marketplace_posts')
         .select(`
           *,
           profiles(full_name, username, business_name, photo_url, is_verified)
         `)
-        .eq('is_active', true)
         .order('is_boosted', { ascending: false })
         .order('created_at', { ascending: false });
+
+      const uid = currentUser?.id || user?.id;
+      if (uid) {
+        // Show active posts for everyone + include my own drafts/inactive
+        query = query.or(`is_active.eq.true,user_id.eq.${uid}`);
+      } else {
+        query = query.eq('is_active', true);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setPosts(data as any || []);
