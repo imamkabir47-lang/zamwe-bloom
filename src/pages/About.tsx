@@ -115,3 +115,4 @@ const About = () => {
 };
 
 export default About;
+// End of src/pages/About.tsx
