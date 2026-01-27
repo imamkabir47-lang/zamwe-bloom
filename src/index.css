@@ -134,8 +134,20 @@ All colors MUST be HSL.
     @apply bg-white/80 backdrop-blur-lg border border-primary/10 shadow-lg;
   }
   
+  .glass-card-strong {
+    @apply bg-card/90 backdrop-blur-xl border border-border/50 shadow-xl;
+  }
+  
+  .gradient-border {
+    @apply relative before:absolute before:inset-0 before:rounded-[inherit] before:p-[1px] before:bg-gradient-to-r before:from-primary before:to-accent before:-z-10;
+  }
+  
   .hover-lift {
     @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+  }
+  
+  .hover-glow {
+    @apply transition-shadow duration-300 hover:shadow-[0_0_30px_hsl(330,81%,71%,0.3)];
   }
   
   .animate-float {
@@ -164,5 +176,27 @@ All colors MUST be HSL.
       opacity: 1;
       transform: translateY(0);
     }
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 20px hsl(330, 81%, 71%, 0.2);
+    }
+    to {
+      box-shadow: 0 0 40px hsl(330, 81%, 71%, 0.4);
+    }
+  }
+  
+  .stat-card {
+    @apply relative overflow-hidden rounded-2xl bg-card border border-border/50 p-6;
+  }
+  
+  .stat-card::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50;
   }
 }

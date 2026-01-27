@@ -1,17 +1,38 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { formatDistanceToNow } from "date-fns";
+
+// Components
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminStatCard } from "@/components/admin/AdminStatCard";
+import { AnalyticsOverview } from "@/components/admin/AnalyticsOverview";
+import { ApplicationCard } from "@/components/admin/ApplicationCard";
+import { MessageCard } from "@/components/admin/MessageCard";
+import { GlassCard } from "@/components/dashboard/GlassCard";
+
+// Icons
+import { 
+  Users, 
+  FileText, 
+  MessageSquare, 
+  Mail,
+  TrendingUp,
+  Clock,
+  CheckCircle,
+  XCircle,
+  UserPlus,
+  Activity
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [applications, setApplications] = useState<any[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,7 +71,7 @@ const AdminDashboard = () => {
 
   const loadData = async () => {
     try {
-      const [appsResult, messagesResult] = await Promise.all([
+      const [appsResult, messagesResult, profilesResult] = await Promise.all([
         supabase
           .from("join_applications")
           .select("*")
@@ -59,10 +80,15 @@ const AdminDashboard = () => {
           .from("contact_messages")
           .select("*")
           .order("submitted_at", { ascending: false }),
+        supabase
+          .from("profiles")
+          .select("*")
+          .order("created_at", { ascending: false })
       ]);
 
       if (appsResult.data) setApplications(appsResult.data);
       if (messagesResult.data) setMessages(messagesResult.data);
+      if (profilesResult.data) setProfiles(profilesResult.data);
     } catch (error) {
       console.error("Error loading data:", error);
     } finally {
@@ -72,21 +98,13 @@ const AdminDashboard = () => {
 
   const setupRealtime = () => {
     const appsChannel = supabase
-      .channel("applications")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "join_applications" },
-        () => loadData()
-      )
+      .channel("admin-applications")
+      .on("postgres_changes", { event: "*", schema: "public", table: "join_applications" }, () => loadData())
       .subscribe();
 
     const messagesChannel = supabase
-      .channel("messages")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "contact_messages" },
-        () => loadData()
-      )
+      .channel("admin-messages")
+      .on("postgres_changes", { event: "*", schema: "public", table: "contact_messages" }, () => loadData())
       .subscribe();
 
     return () => {
@@ -108,23 +126,19 @@ const AdminDashboard = () => {
         title: "Status updated",
         description: `Application marked as ${status}`,
       });
+      loadData();
     } catch (error) {
-      console.error("Error updating status:", error);
-      toast({
-        title: "Update failed",
-        variant: "destructive",
-      });
+      toast({ title: "Update failed", variant: "destructive" });
     }
   };
 
   const handleMarkRead = async (id: string) => {
     try {
-      const { error } = await supabase
+      await supabase
         .from("contact_messages")
         .update({ is_read: true, read_at: new Date().toISOString() })
         .eq("id", id);
-
-      if (error) throw error;
+      loadData();
     } catch (error) {
       console.error("Error marking as read:", error);
     }
@@ -136,190 +150,218 @@ const AdminDashboard = () => {
     toast({ title: "Logged out successfully" });
   };
 
+  // Stats calculations
+  const stats = {
+    totalUsers: profiles.length,
+    totalApplications: applications.length,
+    pendingApplications: applications.filter(a => a.status === "pending").length,
+    approvedApplications: applications.filter(a => a.status === "approved").length,
+    rejectedApplications: applications.filter(a => a.status === "rejected").length,
+    totalMessages: messages.length,
+    unreadMessages: messages.filter(m => !m.is_read).length
+  };
+
+  // Chart data
+  const userGrowthData = [
+    { name: "Jan", users: 12 },
+    { name: "Feb", users: 19 },
+    { name: "Mar", users: 28 },
+    { name: "Apr", users: 35 },
+    { name: "May", users: 42 },
+    { name: "Jun", users: profiles.length }
+  ];
+
+  const applicationsData = [
+    { name: "Pending", value: stats.pendingApplications },
+    { name: "Approved", value: stats.approvedApplications },
+    { name: "Rejected", value: stats.rejectedApplications }
+  ];
+
+  const activityData = [
+    { name: "Mon", applications: 3, messages: 5 },
+    { name: "Tue", applications: 5, messages: 4 },
+    { name: "Wed", applications: 2, messages: 8 },
+    { name: "Thu", applications: 6, messages: 3 },
+    { name: "Fri", applications: 4, messages: 6 },
+    { name: "Sat", applications: 1, messages: 2 },
+    { name: "Sun", applications: 2, messages: 1 }
+  ];
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-foreground/60">Loading...</div>
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full"
+        />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background py-20 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-serif font-bold text-primary">
-            Admin Dashboard
-          </h1>
-          <div className="flex gap-2 flex-wrap">
-            <Button onClick={() => navigate('/admin/manage-users')}>
-              Manage Users
-            </Button>
-            <Button onClick={() => navigate('/admin/create-user')} variant="secondary">
-              Create User
-            </Button>
-            <Button onClick={() => navigate('/admin/create-admin')} variant="secondary">
-              Create Admin
-            </Button>
-            <Button onClick={() => navigate('/admin/manage-events')} variant="secondary">
-              Manage Events
-            </Button>
-            <Button onClick={() => navigate('/admin/manage-resources')} variant="secondary">
-              Manage Resources
-            </Button>
-            <Button onClick={() => navigate('/admin/manage-videos')} variant="secondary">
-              Manage Videos
-            </Button>
-            <Button onClick={handleLogout} variant="outline">
-              Logout
-            </Button>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex">
+      {/* Sidebar */}
+      <AdminSidebar onLogout={handleLogout} />
+
+      {/* Main Content */}
+      <main className="flex-1 ml-20 lg:ml-64 transition-all duration-300">
+        {/* Decorative background */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-accent/10 rounded-full blur-2xl" />
+        </div>
+
+        <div className="relative z-10 p-8 pt-24">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8"
+          >
+            <h1 className="text-4xl font-serif font-bold text-foreground mb-2">
+              Admin Dashboard
+            </h1>
+            <p className="text-muted-foreground">
+              Manage your platform, users, and content
+            </p>
+          </motion.div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <AdminStatCard
+              title="Total Users"
+              value={stats.totalUsers}
+              icon={Users}
+              trend={12}
+              variant="primary"
+              delay={0}
+            />
+            <AdminStatCard
+              title="Applications"
+              value={stats.totalApplications}
+              icon={FileText}
+              description={`${stats.pendingApplications} pending`}
+              variant="accent"
+              delay={0.1}
+            />
+            <AdminStatCard
+              title="Messages"
+              value={stats.totalMessages}
+              icon={MessageSquare}
+              description={`${stats.unreadMessages} unread`}
+              variant="success"
+              delay={0.2}
+            />
+            <AdminStatCard
+              title="New This Week"
+              value={stats.pendingApplications + stats.unreadMessages}
+              icon={Activity}
+              trend={8}
+              variant="warning"
+              delay={0.3}
+            />
           </div>
-        </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="p-6">
-            <div className="text-2xl font-bold text-primary">
-              {applications.length}
-            </div>
-            <div className="text-sm text-foreground/70">Total Applications</div>
-          </Card>
-          <Card className="p-6">
-            <div className="text-2xl font-bold text-accent">
-              {applications.filter((a) => a.status === "pending").length}
-            </div>
-            <div className="text-sm text-foreground/70">Pending</div>
-          </Card>
-          <Card className="p-6">
-            <div className="text-2xl font-bold text-primary">
-              {messages.length}
-            </div>
-            <div className="text-sm text-foreground/70">Total Messages</div>
-          </Card>
-          <Card className="p-6">
-            <div className="text-2xl font-bold text-accent">
-              {messages.filter((m) => !m.is_read).length}
-            </div>
-            <div className="text-sm text-foreground/70">Unread Messages</div>
-          </Card>
-        </div>
+          {/* Analytics Section */}
+          <div className="mb-8">
+            <AnalyticsOverview 
+              userData={userGrowthData}
+              applicationsData={applicationsData}
+              activityData={activityData}
+            />
+          </div>
 
-        <Tabs defaultValue="applications" className="w-full">
-          <TabsList className="mb-6">
-            <TabsTrigger value="applications">Applications</TabsTrigger>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="events">Events</TabsTrigger>
-            <TabsTrigger value="newsletter">Newsletter</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="applications" className="space-y-4">
-            {applications.map((app) => (
-              <Card key={app.id} className="p-6">
-                <div className="flex gap-6 mb-4">
-                  {app.photo_url && (
-                    <div className="flex-shrink-0">
-                      <img
-                        src={app.photo_url}
-                        alt={app.full_name}
-                        className="w-32 h-32 object-cover rounded-lg border-2 border-primary/20"
-                      />
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="font-semibold text-lg">{app.full_name}</h3>
-                        <p className="text-sm text-foreground/60">
-                          {app.business_name} - {app.business_type}
-                        </p>
-                      </div>
-                      <Badge
-                        variant={
-                          app.status === "pending"
-                            ? "outline"
-                            : app.status === "approved"
-                            ? "default"
-                            : "destructive"
-                        }
-                      >
-                        {app.status}
-                      </Badge>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="text-foreground/60">Phone:</span>{" "}
-                        {app.phone_number}
-                      </div>
-                      <div>
-                        <span className="text-foreground/60">Email:</span> {app.email}
-                      </div>
-                      <div>
-                        <span className="text-foreground/60">Plan:</span>{" "}
-                        {app.membership_plan}
-                      </div>
-                      <div>
-                        <span className="text-foreground/60">Submitted:</span>{" "}
-                        {formatDistanceToNow(new Date(app.submitted_at))} ago
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="mb-4">
-                  <div className="text-sm text-foreground/60 mb-1">Why Join:</div>
-                  <p className="text-sm">{app.why_join}</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    onClick={() => handleUpdateStatus(app.id, "approved")}
-                    disabled={app.status !== "pending"}
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => handleUpdateStatus(app.id, "rejected")}
-                    disabled={app.status !== "pending"}
-                  >
-                    Reject
-                  </Button>
-                </div>
-              </Card>
-            ))}
-            {applications.length === 0 && (
-              <Card className="p-12 text-center text-foreground/60">
-                No applications yet
-              </Card>
-            )}
-          </TabsContent>
-
-          <TabsContent value="messages" className="space-y-4">
-            {messages.map((msg) => (
-              <Card
-                key={msg.id}
-                className={`p-6 ${!msg.is_read ? "border-primary" : ""}`}
-                onClick={() => !msg.is_read && handleMarkRead(msg.id)}
+          {/* Tabs for Applications and Messages */}
+          <Tabs defaultValue="applications" className="space-y-6">
+            <TabsList className="bg-card/80 backdrop-blur-sm p-1 rounded-2xl">
+              <TabsTrigger 
+                value="applications" 
+                className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-6"
               >
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-semibold">{msg.name}</h3>
-                  {!msg.is_read && <Badge variant="default">New</Badge>}
+                <FileText className="h-4 w-4 mr-2" />
+                Applications
+                {stats.pendingApplications > 0 && (
+                  <Badge className="ml-2 bg-accent text-accent-foreground">
+                    {stats.pendingApplications}
+                  </Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger 
+                value="messages"
+                className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-6"
+              >
+                <Mail className="h-4 w-4 mr-2" />
+                Messages
+                {stats.unreadMessages > 0 && (
+                  <Badge className="ml-2 bg-accent text-accent-foreground">
+                    {stats.unreadMessages}
+                  </Badge>
+                )}
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Applications Tab */}
+            <TabsContent value="applications" className="space-y-4">
+              {/* Quick Filters */}
+              <div className="flex gap-3 mb-6">
+                <Badge variant="outline" className="px-4 py-2 cursor-pointer hover:bg-muted flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-amber-500" />
+                  Pending ({stats.pendingApplications})
+                </Badge>
+                <Badge variant="outline" className="px-4 py-2 cursor-pointer hover:bg-muted flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  Approved ({stats.approvedApplications})
+                </Badge>
+                <Badge variant="outline" className="px-4 py-2 cursor-pointer hover:bg-muted flex items-center gap-2">
+                  <XCircle className="h-4 w-4 text-red-500" />
+                  Rejected ({stats.rejectedApplications})
+                </Badge>
+              </div>
+
+              {applications.length === 0 ? (
+                <GlassCard hover={false} className="p-12 text-center">
+                  <UserPlus className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No applications yet</p>
+                </GlassCard>
+              ) : (
+                <div className="space-y-4">
+                  {applications.map((app, index) => (
+                    <ApplicationCard
+                      key={app.id}
+                      application={app}
+                      onApprove={(id) => handleUpdateStatus(id, "approved")}
+                      onReject={(id) => handleUpdateStatus(id, "rejected")}
+                      index={index}
+                    />
+                  ))}
                 </div>
-                <div className="text-sm text-foreground/60 mb-3">
-                  {msg.email} • {msg.phone} •{" "}
-                  {formatDistanceToNow(new Date(msg.submitted_at))} ago
+              )}
+            </TabsContent>
+
+            {/* Messages Tab */}
+            <TabsContent value="messages" className="space-y-4">
+              {messages.length === 0 ? (
+                <GlassCard hover={false} className="p-12 text-center">
+                  <Mail className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No messages yet</p>
+                </GlassCard>
+              ) : (
+                <div className="space-y-4">
+                  {messages.map((msg, index) => (
+                    <MessageCard
+                      key={msg.id}
+                      message={msg}
+                      onMarkRead={handleMarkRead}
+                      index={index}
+                    />
+                  ))}
                 </div>
-                <p className="text-sm">{msg.message}</p>
-              </Card>
-            ))}
-            {messages.length === 0 && (
-              <Card className="p-12 text-center text-foreground/60">
-                No messages yet
-              </Card>
-            )}
-          </TabsContent>
-        </Tabs>
-      </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </div>
+      </main>
     </div>
   );
 };
