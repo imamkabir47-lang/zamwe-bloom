@@ -221,12 +221,20 @@ const AdminDashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <h1 className="text-4xl font-serif font-bold text-foreground mb-2">
-              Admin Dashboard
-            </h1>
-            <p className="text-muted-foreground">
-              Manage your platform, users, and content
-            </p>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h1 className="text-4xl font-serif font-bold text-foreground mb-2">
+                  Admin Dashboard
+                </h1>
+                <p className="text-muted-foreground">
+                  Manage your platform, users, and content
+                </p>
+              </div>
+              <div className="flex items-center gap-4">
+                <Clock showDate />
+                <ThemeSelector />
+              </div>
+            </div>
           </motion.div>
 
           {/* Stats Grid */}
