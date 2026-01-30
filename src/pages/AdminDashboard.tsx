@@ -12,6 +12,9 @@ import { AnalyticsOverview } from "@/components/admin/AnalyticsOverview";
 import { ApplicationCard } from "@/components/admin/ApplicationCard";
 import { MessageCard } from "@/components/admin/MessageCard";
 import { GlassCard } from "@/components/dashboard/GlassCard";
+import ThemeSelector from "@/components/admin/ThemeSelector";
+import Clock from "@/components/Clock";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 // Icons
 import { 
@@ -20,7 +23,7 @@ import {
   MessageSquare, 
   Mail,
   TrendingUp,
-  Clock,
+  Clock as ClockIcon,
   CheckCircle,
   XCircle,
   UserPlus,
@@ -188,15 +191,7 @@ const AdminDashboard = () => {
   ];
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full"
-        />
-      </div>
-    );
+    return <LoadingSpinner message="Loading admin dashboard..." />;
   }
 
   return (
@@ -219,12 +214,20 @@ const AdminDashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <h1 className="text-4xl font-serif font-bold text-foreground mb-2">
-              Admin Dashboard
-            </h1>
-            <p className="text-muted-foreground">
-              Manage your platform, users, and content
-            </p>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h1 className="text-4xl font-serif font-bold text-foreground mb-2">
+                  Admin Dashboard
+                </h1>
+                <p className="text-muted-foreground">
+                  Manage your platform, users, and content
+                </p>
+              </div>
+              <div className="flex items-center gap-4">
+                <Clock showDate />
+                <ThemeSelector />
+              </div>
+            </div>
           </motion.div>
 
           {/* Stats Grid */}
@@ -306,7 +309,7 @@ const AdminDashboard = () => {
               {/* Quick Filters */}
               <div className="flex gap-3 mb-6">
                 <Badge variant="outline" className="px-4 py-2 cursor-pointer hover:bg-muted flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-amber-500" />
+                  <ClockIcon className="h-4 w-4 text-amber-500" />
                   Pending ({stats.pendingApplications})
                 </Badge>
                 <Badge variant="outline" className="px-4 py-2 cursor-pointer hover:bg-muted flex items-center gap-2">
