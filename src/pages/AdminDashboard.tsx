@@ -12,6 +12,8 @@ import { AnalyticsOverview } from "@/components/admin/AnalyticsOverview";
 import { ApplicationCard } from "@/components/admin/ApplicationCard";
 import { MessageCard } from "@/components/admin/MessageCard";
 import { GlassCard } from "@/components/dashboard/GlassCard";
+import ThemeSelector from "@/components/admin/ThemeSelector";
+import Clock from "@/components/Clock";
 
 // Icons
 import { 
@@ -20,7 +22,7 @@ import {
   MessageSquare, 
   Mail,
   TrendingUp,
-  Clock,
+  Clock as ClockIcon,
   CheckCircle,
   XCircle,
   UserPlus,
