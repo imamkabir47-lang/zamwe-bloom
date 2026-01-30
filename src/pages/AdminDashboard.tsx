@@ -316,7 +316,7 @@ const AdminDashboard = () => {
               {/* Quick Filters */}
               <div className="flex gap-3 mb-6">
                 <Badge variant="outline" className="px-4 py-2 cursor-pointer hover:bg-muted flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-amber-500" />
+                  <ClockIcon className="h-4 w-4 text-amber-500" />
                   Pending ({stats.pendingApplications})
                 </Badge>
                 <Badge variant="outline" className="px-4 py-2 cursor-pointer hover:bg-muted flex items-center gap-2">
