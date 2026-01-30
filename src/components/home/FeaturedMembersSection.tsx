@@ -23,7 +23,9 @@ const FeaturedMembersSection = () => {
 
   useEffect(() => {
     const fetchMembers = async () => {
-      const { data } = await supabase
+      // This query works for everyone due to updated RLS policy
+      // It fetches verified, active profiles that are publicly visible
+      const { data, error } = await supabase
         .from("profiles")
         .select("id, user_id, full_name, business_name, business_type, photo_url, is_verified")
         .eq("is_verified", true)
@@ -31,11 +33,29 @@ const FeaturedMembersSection = () => {
         .order("created_at", { ascending: false })
         .limit(6);
 
+      if (error) {
+        console.error("Error fetching members:", error);
+      }
+
       setMembers(data || []);
       setLoading(false);
     };
 
     fetchMembers();
+
+    // Set up realtime subscription for live updates
+    const channel = supabase
+      .channel("featured-members")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "profiles" },
+        () => fetchMembers()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   if (loading) {
@@ -63,7 +83,12 @@ const FeaturedMembersSection = () => {
   return (
     <section className="py-20 bg-secondary/20 overflow-hidden">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
+        <motion.div 
+          className="flex flex-col md:flex-row md:items-end md:justify-between mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
           <div>
             <Badge variant="outline" className="mb-4 border-primary text-primary">
               Our Community
@@ -81,7 +106,7 @@ const FeaturedMembersSection = () => {
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {members.map((member, index) => (
@@ -99,11 +124,17 @@ const FeaturedMembersSection = () => {
                       src={member.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.full_name)}&background=random`}
                       alt={member.full_name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      loading="lazy"
                     />
                     {member.is_verified && (
-                      <div className="absolute top-2 right-2 bg-primary rounded-full p-1">
+                      <motion.div 
+                        className="absolute top-2 right-2 bg-primary rounded-full p-1"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: index * 0.1 + 0.3 }}
+                      >
                         <CheckCircle className="w-4 h-4 text-primary-foreground" />
-                      </div>
+                      </motion.div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>

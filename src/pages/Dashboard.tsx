@@ -208,14 +208,6 @@ const Dashboard = () => {
             Create Post
           </Button>
         </motion.div>
-          
-          <div className="flex items-center gap-3">
-            {user && <NotificationDropdown userId={user.id} />}
-            <Button onClick={() => navigate('/create-post')} className="gap-2 rounded-xl">
-              <Sparkles className="h-4 w-4" />
-              Create Post
-            </Button>
-          </div>
         </motion.div>
 
         <div className="grid grid-cols-12 gap-6">
