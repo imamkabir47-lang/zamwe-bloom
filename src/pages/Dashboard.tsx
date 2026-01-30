@@ -182,16 +182,32 @@ const Dashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-8"
+          className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8"
         >
           <div>
-            <h1 className="text-4xl font-serif font-bold text-foreground mb-2">
-              Welcome back, <span className="text-primary">{profile?.full_name?.split(' ')[0]}</span>
-            </h1>
-            <p className="text-muted-foreground">
+            <SmartGreeting name={profile?.full_name?.split(' ')[0]} />
+            <p className="text-muted-foreground mt-1">
               Here's what's happening with your business today
             </p>
           </div>
+          
+          <div className="flex items-center gap-3">
+            <Clock showDate />
+          </div>
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex items-center justify-end gap-3 mb-6"
+        >
+          {user && <NotificationDropdown userId={user.id} />}
+          <Button onClick={() => navigate('/create-post')} className="gap-2 rounded-xl">
+            <Sparkles className="h-4 w-4" />
+            Create Post
+          </Button>
+        </motion.div>
           
           <div className="flex items-center gap-3">
             {user && <NotificationDropdown userId={user.id} />}
