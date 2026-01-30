@@ -208,7 +208,6 @@ const Dashboard = () => {
             Create Post
           </Button>
         </motion.div>
-        </motion.div>
 
         <div className="grid grid-cols-12 gap-6">
           {/* Left Column - Profile & Quick Actions */}
